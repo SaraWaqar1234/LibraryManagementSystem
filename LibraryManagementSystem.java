@@ -164,7 +164,6 @@ public class LibraryManagementSystem {
         }
     }
 
-    // Keep these as placeholders
     public static void addBook() {
         if (!isStaff()) {
             System.out.println("Only Staff can add books!");
@@ -182,49 +181,129 @@ public class LibraryManagementSystem {
     }
 
     public static void issueBook() {
-        System.out.println("Issue Book feature under process.");
-    }
-
-    // Return Book
-    public static void returnBook() {
         while (true) {
-            System.out.print("Enter Book ID or Name to return: ");
-            String input = sc.nextLine().trim();
-            String[] foundBook = null;
-
-            for (String[] b : books) {
-                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
-                    foundBook = b;
-                    break;
-                }
-            }
-
-            if (foundBook == null) {
-                System.out.println("Book not found!");
-            } else {
-                int copies = Integer.parseInt(foundBook[4]);
-                foundBook[4] = String.valueOf(copies + 1);
-
+            try {
+                String[] currentUser = null;
                 for (String[] u : users) {
                     if (u[0].equals(currentUserID)) {
-                        int count = Integer.parseInt(u[5]);
-                        if (count > 0) u[5] = String.valueOf(count - 1);
+                        currentUser = u;
                         break;
                     }
                 }
+                if (currentUser == null) {
+                    System.out.println("User not found!");
+                    return;
+                }
 
-                saveBooks();
-                saveUsers();
-                System.out.println("Book returned successfully!");
+                int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
+                int borrowedCount = Integer.parseInt(currentUser[5]);
+                if (borrowedCount >= borrowLimit) {
+                    System.out.println("You have reached your borrow limit.");
+                    return;
+                }
+
+                System.out.print("Enter Book ID or Name to issue: ");
+                String input = sc.nextLine().trim();
+                String[] foundBook = null;
+
+                for (String[] b : books) {
+                    if (b.length >= 5 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                        int copies = Integer.parseInt(b[4]);
+                        if (copies > 0) {
+                            foundBook = b;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundBook == null) {
+                    System.out.println("Book not found or no copies available!");
+                } else {
+                    int availableCopies = Integer.parseInt(foundBook[4]);
+                    foundBook[4] = String.valueOf(availableCopies - 1);
+
+                    // Track who borrowed the book
+                    if (foundBook.length < 6) {
+                        // add borrowedBy field if not exists
+                        foundBook = Arrays.copyOf(foundBook, 6);
+                    }
+                    foundBook[5] = currentUserID;
+
+                    currentUser[5] = String.valueOf(borrowedCount + 1);
+
+                    saveBooks();
+                    saveUsers();
+                    System.out.println("Book issued successfully!");
+                }
+
+                System.out.print("Do you want to issue another book? (yes/no): ");
+                String choice = sc.nextLine().trim();
+                if (!choice.equalsIgnoreCase("yes")) break;
+
+            } catch (Exception e) {
+                System.out.println("An error occurred while issuing the book. Please try again.");
             }
-
-            System.out.print("Do you want to return another book? (yes/no): ");
-            String choice = sc.nextLine().trim();
-            if (!choice.equalsIgnoreCase("yes")) break;
         }
     }
 
-    // Check Book Availability with Section
+    public static void returnBook() {
+        while (true) {
+            try {
+                String[] currentUser = null;
+                for (String[] u : users) {
+                    if (u[0].equals(currentUserID)) {
+                        currentUser = u;
+                        break;
+                    }
+                }
+                if (currentUser == null) {
+                    System.out.println("User not found!");
+                    return;
+                }
+
+                int borrowedCount = Integer.parseInt(currentUser[5]);
+                if (borrowedCount <= 0) {
+                    System.out.println("You have no books to return.");
+                    return;
+                }
+
+                System.out.print("Enter Book ID or Name to return: ");
+                String input = sc.nextLine().trim();
+                String[] foundBook = null;
+
+                for (String[] b : books) {
+                    if (b.length >= 6 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                        String borrowedBy = b[5];
+                        if (borrowedBy != null && borrowedBy.equals(currentUserID)) {
+                            foundBook = b;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundBook == null) {
+                    System.out.println("Book not found or you did not borrow this book!");
+                } else {
+                    int availableCopies = Integer.parseInt(foundBook[4]);
+                    foundBook[4] = String.valueOf(availableCopies + 1);
+                    foundBook[5] = "";
+                    currentUser[5] = String.valueOf(borrowedCount - 1);
+
+                    saveBooks();
+                    saveUsers();
+                    System.out.println("Book returned successfully!");
+                }
+
+                System.out.print("Do you want to return another book? (yes/no): ");
+                String choice = sc.nextLine().trim();
+                if (!choice.equalsIgnoreCase("yes")) break;
+
+            } catch (Exception e) {
+                System.out.println("An error occurred while returning the book. Please try again.");
+            }
+        }
+    }
+
     public static void checkBookAvailability() {
         while (true) {
             System.out.print("Enter Book ID or Name to check availability: ");
@@ -232,22 +311,30 @@ public class LibraryManagementSystem {
             String[] foundBook = null;
 
             for (String[] b : books) {
-                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
-                    foundBook = b;
-                    break;
+                try {
+                    if (b.length >= 5 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                        foundBook = b;
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error reading book data: " + e.getMessage());
                 }
             }
 
             if (foundBook == null) {
                 System.out.println("Book not found!");
             } else {
-                int copies = Integer.parseInt(foundBook[4]);
-                System.out.println("\n--- Book Details ---");
-                System.out.println("Book ID: " + foundBook[0]);
-                System.out.println("Book Name: " + foundBook[1]);
-                System.out.println("Author: " + foundBook[2]);
-                System.out.println("Section: " + foundBook[3]);
-                System.out.println("Available Copies: " + copies);
+                try {
+                    int copies = Integer.parseInt(foundBook[4]);
+                    System.out.println("\n--- Book Details ---");
+                    System.out.println("Book ID: " + foundBook[0]);
+                    System.out.println("Book Name: " + foundBook[1]);
+                    System.out.println("Author: " + foundBook[2]);
+                    System.out.println("Section: " + foundBook[3]);
+                    System.out.println("Available Copies: " + copies);
+                } catch (Exception e) {
+                    System.out.println("Error displaying book: " + e.getMessage());
+                }
             }
 
             System.out.print("Do you want to check another book? (yes/no): ");
@@ -294,7 +381,6 @@ public class LibraryManagementSystem {
         }
     }
 
-    // File Handling
     public static void loadUsers() {
         try {
             BufferedReader br = new BufferedReader(new FileReader("users.txt"));
@@ -317,7 +403,7 @@ public class LibraryManagementSystem {
             }
             bw.close();
         } catch (Exception e) {
-            System.out.println("Error saving users.");
+            System.out.println("Error saving users: " + e.getMessage());
         }
     }
 
@@ -343,7 +429,7 @@ public class LibraryManagementSystem {
             }
             bw.close();
         } catch (Exception e) {
-            System.out.println("Error saving books.");
+            System.out.println("Error saving books: " + e.getMessage());
         }
     }
 }

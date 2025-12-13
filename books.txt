@@ -9,7 +9,7 @@
 9,Poetic Forms,Edgar Allan Poe,English,2
 10,Essay Writing Techniques,George Orwell,English,3
 
-11,Java Basics,John Smith,Computer Science,4
+11,Java Basics,John Smith,Computer Science,5
 12,Python Programming,Sarah Khan,Computer Science,3
 13,C Programming,Brian Kernighan,Computer Science,5
 14,Data Structures,Robert Lafore,Computer Science,2
