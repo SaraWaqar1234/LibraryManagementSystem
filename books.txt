@@ -1,50 +1,54 @@
-1,Java Basics,John Smith,4
-2,Python Programming,Sarah Khan,3
-3,C Programming,Brian Kernighan,5
-4,Data Structures and Algorithms,Robert Lafore,2
-5,Operating Systems,Abraham Silberschatz,3
-6,Database System Concepts,Henry Korth,4
-7,Computer Networks,Andrew Tanenbaum,2
-8,Artificial Intelligence,Stuart Russell,3
-9,Discrete Mathematics,Rosen,4
-10,Web Development Basics,Emily Clarke,3
-11,HTML & CSS Design,Jon Duckett,5
-12,JavaScript Essentials,Mark Davis,4
-13,Software Engineering,Ian Sommerville,3
-14,Machine Learning,Bishop,2
-15,Deep Learning,Ian Goodfellow,1
-16,Cloud Computing,Thomas Erl,2
-17,Cyber Security Basics,Kevin Mitnick,3
-18,Android Development,James Lee,4
-19,iOS Development,Chris Stewart,2
-20,Computer Architecture,John Hennessy,3
-21,Modern PHP Programming,Josh Lockhart,4
-22,Ruby Programming,David Black,2
-23,Swift Fundamentals,Matt Neuburg,3
-24,Kotlin for Android,Nate Ebel,3
-25,Introduction to Linux,Richard Blum,4
-26,Shell Scripting,Steve Parker,2
-27,Networks Security Principles,William Stallings,3
-28,Ethical Hacking Basics,EC Council,4
-29,SQL Essentials,Allen Taylor,5
-30,NoSQL Databases,Pramod Sadalage,2
-31,Data Science with Python,Wes McKinney,3
-32,Statistics for Data Science,Peter Bruce,2
-33,Computer Graphics,Donald Hearn,3
-34,Compiler Design,Alfred Aho,2
-35,Cloud Native Applications,Justin Garrison,4
-36,Information Systems,Laudon,3
-37,Blockchain Basics,Daniel Drescher,2
-38,Cryptography Fundamentals,Bruce Schneier,3
-39,Network Programming,Richard Stevens,2
-40,Agile Project Management,Mike Cohn,3
-41,Leadership in Tech,Ben Horowitz,2
-42,Digital Logic Design,Morris Mano,4
-43,Embedded Systems,Michael Barr,2
-44,Robotics Basics,Peter Corke,3
-45,Algorithms Unlocked,Thomas Cormen,3
-46,Mathematics for CS,Eric Lehman,4
-47,Theory of Computation,Michael Sipser,2
-48,Human Computer Interaction,Alan Dix,3
-49,Big Data Analytics,Seema Acharya,2
-50,Software Testing Principles,Glenford Myers,4
+1,English Literature Basics,Emily Bronte,English,4
+2,Shakespearean Plays,William Shakespeare,English,3
+3,Modern Poetry,Robert Frost,English,5
+4,English Grammar Essentials,John Smith,English,4
+5,Creative Writing,Anne Lamott,English,3
+6,American Literature,Herman Melville,English,2
+7,British Novels,Jane Austen,English,3
+8,World Literature,Leo Tolstoy,English,4
+9,Poetic Forms,Edgar Allan Poe,English,2
+10,Essay Writing Techniques,George Orwell,English,3
+
+11,Java Basics,John Smith,Computer Science,4
+12,Python Programming,Sarah Khan,Computer Science,3
+13,C Programming,Brian Kernighan,Computer Science,5
+14,Data Structures,Robert Lafore,Computer Science,2
+15,Operating Systems,Abraham Silberschatz,Computer Science,3
+16,Database System Concepts,Henry Korth,Computer Science,4
+17,Computer Networks,Andrew Tanenbaum,Computer Science,2
+18,Artificial Intelligence,Stuart Russell,Computer Science,3
+19,Machine Learning,Bishop,Computer Science,2
+20,Deep Learning,Ian Goodfellow,Computer Science,1
+
+21,World History,Howard Zinn,History,4
+22,Ancient Civilizations,James Morris,History,3
+23,Medieval Europe,Barbara Tuchman,History,2
+24,History of Modern Europe,Eric Hobsbawm,History,3
+25,American History,David McCullough,History,4
+26,History of Science,John Gribbin,History,2
+27,European Politics,Timothy Snyder,History,3
+28,Colonial History,Philip Curtin,History,2
+29,History of Philosophy,Bertrand Russell,History,3
+30,History of Art,E.H. Gombrich,History,2
+
+31,Physics Fundamentals,Isaac Newton,Science,4
+32,Chemistry Basics,Marie Curie,Science,3
+33,Biology Essentials,Charles Darwin,Science,5
+34,Astronomy Guide,Neil deGrasse Tyson,Science,3
+35,Environmental Science,Jane Goodall,Science,2
+36,Genetics Explained,Gregor Mendel,Science,3
+37,Earth Science,James Lovelock,Science,2
+38,Nuclear Physics,Richard Feynman,Science,3
+39,Chemical Reactions,Lavoisier,Science,2
+40,Scientific Method,Francis Bacon,Science,3
+
+41,Self Help,Stephen Covey,Social Studies,4
+42,Leadership Skills,John Maxwell,Social Studies,3
+43,Personal Finance,Robert Kiyosaki,Social Studies,5
+44,Productivity Hacks,Tim Ferriss,Social Studies,4
+45,Mindfulness,Jon Kabat-Zinn,Social Studies,3
+46,Travel Guides,Rick Steves,Social Studies,2
+47,Philosophy Made Simple,Simon Blackburn,Social Studies,3
+48,Psychology Basics,Sigmund Freud,Social Studies,4
+49,Motivation & Success,Napoleon Hill,Social Studies,3
+50,Social Knowledge Compendium,Various Authors,Social Studies,5
