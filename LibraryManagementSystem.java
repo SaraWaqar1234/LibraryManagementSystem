@@ -164,32 +164,13 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Keep these as placeholders
     public static void addBook() {
         if (!isStaff()) {
             System.out.println("Only Staff can add books!");
             return;
         }
-
-        System.out.print("Enter Book ID: ");
-        String id = sc.nextLine().trim();
-
-        System.out.print("Enter Book Name: ");
-        String name = sc.nextLine().trim();
-
-        System.out.print("Enter Author Name: ");
-        String author = sc.nextLine().trim();
-
-        System.out.print("Enter Number of Copies: ");
-        String copies = sc.nextLine().trim();
-
-        System.out.print("Enter Book Category (History/English/CS/Science/etc.): ");
-        String category = sc.nextLine().trim();
-
-        String[] newBook = {id, name, author, copies, category};
-        books.add(newBook);
-        saveBooks();
-
-        System.out.println("Book added successfully!");
+        System.out.println("Add Book feature under process.");
     }
 
     public static void removeBook() {
@@ -197,34 +178,17 @@ public class LibraryManagementSystem {
             System.out.println("Only Staff can remove books!");
             return;
         }
-
-        System.out.print("Enter Book ID or Name to remove: ");
-        String input = sc.nextLine().trim();
-        String[] foundBook = null;
-
-        for (String[] b : books) {
-            if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
-                foundBook = b;
-                break;
-            }
-        }
-
-        if (foundBook != null) {
-            books.remove(foundBook);
-            saveBooks();
-            System.out.println("Book removed successfully!");
-        } else {
-            System.out.println("Book not found!");
-        }
+        System.out.println("Remove Book feature under process.");
     }
 
     public static void issueBook() {
         System.out.println("Issue Book feature under process.");
     }
 
+    // Return Book
     public static void returnBook() {
         while (true) {
-            System.out.print("Enter Book ID or Book Name to return: ");
+            System.out.print("Enter Book ID or Name to return: ");
             String input = sc.nextLine().trim();
             String[] foundBook = null;
 
@@ -238,8 +202,8 @@ public class LibraryManagementSystem {
             if (foundBook == null) {
                 System.out.println("Book not found!");
             } else {
-                int copies = Integer.parseInt(foundBook[3]);
-                foundBook[3] = String.valueOf(copies + 1);
+                int copies = Integer.parseInt(foundBook[4]);
+                foundBook[4] = String.valueOf(copies + 1);
 
                 for (String[] u : users) {
                     if (u[0].equals(currentUserID)) {
@@ -260,29 +224,30 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Check Book Availability with Section
     public static void checkBookAvailability() {
         while (true) {
-            System.out.print("Enter Book ID, Name or Category to check availability: ");
+            System.out.print("Enter Book ID or Name to check availability: ");
             String input = sc.nextLine().trim();
-            ArrayList<String[]> foundBooks = new ArrayList<>();
+            String[] foundBook = null;
 
             for (String[] b : books) {
-                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input) || b[4].equalsIgnoreCase(input)) {
-                    foundBooks.add(b);
+                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
+                    foundBook = b;
+                    break;
                 }
             }
 
-            if (foundBooks.isEmpty()) {
-                System.out.println("No books found!");
+            if (foundBook == null) {
+                System.out.println("Book not found!");
             } else {
-                for (String[] foundBook : foundBooks) {
-                    System.out.println("\n--- Book Details ---");
-                    System.out.println("Book ID: " + foundBook[0]);
-                    System.out.println("Book Name: " + foundBook[1]);
-                    System.out.println("Author: " + foundBook[2]);
-                    System.out.println("Available Copies: " + foundBook[3]);
-                    System.out.println("Category: " + foundBook[4]);
-                }
+                int copies = Integer.parseInt(foundBook[4]);
+                System.out.println("\n--- Book Details ---");
+                System.out.println("Book ID: " + foundBook[0]);
+                System.out.println("Book Name: " + foundBook[1]);
+                System.out.println("Author: " + foundBook[2]);
+                System.out.println("Section: " + foundBook[3]);
+                System.out.println("Available Copies: " + copies);
             }
 
             System.out.print("Do you want to check another book? (yes/no): ");
@@ -329,6 +294,7 @@ public class LibraryManagementSystem {
         }
     }
 
+    // File Handling
     public static void loadUsers() {
         try {
             BufferedReader br = new BufferedReader(new FileReader("users.txt"));
