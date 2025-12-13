@@ -1,0 +1,50 @@
+1,Java Basics,John Smith,4
+2,Python Programming,Sarah Khan,3
+3,C Programming,Brian Kernighan,5
+4,Data Structures and Algorithms,Robert Lafore,2
+5,Operating Systems,Abraham Silberschatz,3
+6,Database System Concepts,Henry Korth,4
+7,Computer Networks,Andrew Tanenbaum,2
+8,Artificial Intelligence,Stuart Russell,3
+9,Discrete Mathematics,Rosen,4
+10,Web Development Basics,Emily Clarke,3
+11,HTML & CSS Design,Jon Duckett,5
+12,JavaScript Essentials,Mark Davis,4
+13,Software Engineering,Ian Sommerville,3
+14,Machine Learning,Bishop,2
+15,Deep Learning,Ian Goodfellow,1
+16,Cloud Computing,Thomas Erl,2
+17,Cyber Security Basics,Kevin Mitnick,3
+18,Android Development,James Lee,4
+19,iOS Development,Chris Stewart,2
+20,Computer Architecture,John Hennessy,3
+21,Modern PHP Programming,Josh Lockhart,4
+22,Ruby Programming,David Black,2
+23,Swift Fundamentals,Matt Neuburg,3
+24,Kotlin for Android,Nate Ebel,3
+25,Introduction to Linux,Richard Blum,4
+26,Shell Scripting,Steve Parker,2
+27,Networks Security Principles,William Stallings,3
+28,Ethical Hacking Basics,EC Council,4
+29,SQL Essentials,Allen Taylor,5
+30,NoSQL Databases,Pramod Sadalage,2
+31,Data Science with Python,Wes McKinney,3
+32,Statistics for Data Science,Peter Bruce,2
+33,Computer Graphics,Donald Hearn,3
+34,Compiler Design,Alfred Aho,2
+35,Cloud Native Applications,Justin Garrison,4
+36,Information Systems,Laudon,3
+37,Blockchain Basics,Daniel Drescher,2
+38,Cryptography Fundamentals,Bruce Schneier,3
+39,Network Programming,Richard Stevens,2
+40,Agile Project Management,Mike Cohn,3
+41,Leadership in Tech,Ben Horowitz,2
+42,Digital Logic Design,Morris Mano,4
+43,Embedded Systems,Michael Barr,2
+44,Robotics Basics,Peter Corke,3
+45,Algorithms Unlocked,Thomas Cormen,3
+46,Mathematics for CS,Eric Lehman,4
+47,Theory of Computation,Michael Sipser,2
+48,Human Computer Interaction,Alan Dix,3
+49,Big Data Analytics,Seema Acharya,2
+50,Software Testing Principles,Glenford Myers,4
