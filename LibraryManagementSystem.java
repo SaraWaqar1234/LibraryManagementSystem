@@ -9,13 +9,14 @@ public class LibraryManagementSystem {
     static String currentUserName = "";
 
     public static void main(String[] args) {
-        createLogFile();
         loadUsers();
         loadBooks();
+        createLogFile();
         boolean loggedIn = false;
 
         System.out.println("Welcome to the Library Management System!");
 
+        // Login/Register
         while (!loggedIn) {
             System.out.print("Do you want to log in? (yes/no): ");
             String choice = sc.nextLine().trim();
@@ -43,6 +44,7 @@ public class LibraryManagementSystem {
         mainMenu();
     }
 
+    // Login and Registration
     public static boolean login() {
         while (true) {
             System.out.print("Do you have an account? (yes/no): ");
@@ -138,6 +140,7 @@ public class LibraryManagementSystem {
         return false;
     }
 
+    // Main Menu
     public static void mainMenu() {
         while (true) {
             System.out.println("\n--- Main Menu ---");
@@ -179,6 +182,7 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Add Book
     public static void addBook() {
         if (!isStaff()) {
             System.out.println("Only staff can add books!");
@@ -191,13 +195,13 @@ public class LibraryManagementSystem {
                 System.out.print("Enter Book ID (leave empty to auto-generate): ");
                 id = sc.nextLine().trim();
                 if (id.isEmpty()) {
-                    id = "B" + (books.size() + 1); 
+                    id = "B" + (books.size() + 1);
                     System.out.println("Generated Book ID: " + id);
                 }
 
                 boolean duplicate = false;
                 for (String[] b : books) {
-                    if (b.length > 0 && b[0].equalsIgnoreCase(id)) {
+                    if (b[0].equalsIgnoreCase(id)) {
                         duplicate = true;
                         break;
                     }
@@ -224,7 +228,7 @@ public class LibraryManagementSystem {
 
             boolean duplicateCombo = false;
             for (String[] b : books) {
-                if (b.length >= 3 && b[1].equalsIgnoreCase(name) && b[2].equalsIgnoreCase(author)) {
+                if (b[1].equalsIgnoreCase(name) && b[2].equalsIgnoreCase(author)) {
                     duplicateCombo = true;
                     break;
                 }
@@ -263,7 +267,6 @@ public class LibraryManagementSystem {
 
             String[] newBook = {id, name, author, section, String.valueOf(copies), ""};
             books.add(newBook);
-
             saveBooks();
 
             try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
@@ -274,12 +277,12 @@ public class LibraryManagementSystem {
             }
 
             System.out.println("Book added successfully!");
-
         } catch (Exception e) {
             System.out.println("Error adding book: " + e.getMessage());
         }
     }
 
+    // Remove Book
     public static void removeBook() {
         if (!isStaff()) {
             System.out.println("Only staff can remove books!");
@@ -296,7 +299,7 @@ public class LibraryManagementSystem {
 
             String[] bookToRemove = null;
             for (String[] b : books) {
-                if (b.length > 0 && b[0].equalsIgnoreCase(id)) {
+                if (b[0].equalsIgnoreCase(id)) {
                     bookToRemove = b;
                     break;
                 }
@@ -317,7 +320,6 @@ public class LibraryManagementSystem {
             }
 
             books.remove(bookToRemove);
-
             saveBooks();
 
             System.out.println("Book removed successfully!");
@@ -334,6 +336,7 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Issue Book
     public static void issueBook() {
         while (true) {
             try {
@@ -361,10 +364,8 @@ public class LibraryManagementSystem {
                 String[] foundBook = null;
 
                 for (String[] b : books) {
-                    if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure index 5 exists
-                    if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
-                        int copies = 0;
-                        try { copies = Integer.parseInt(b[4]); } catch (Exception ex) { copies = 0; }
+                    if (b.length >= 6 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                        int copies = Integer.parseInt(b[4]);
                         if (copies > 0) {
                             foundBook = b;
                             break;
@@ -385,6 +386,17 @@ public class LibraryManagementSystem {
 
                     System.out.println("Book issued successfully!");
 
+                    // Record issue in record.txt
+                    String issueDate = java.time.LocalDate.now().toString();
+                    String recordLine = currentUser[0] + "," + currentUser[1] + "," + currentUser[4] + "," +
+                                        foundBook[0] + "," + foundBook[1] + "," + issueDate + ",Not Returned";
+                    try (BufferedWriter recordWriter = new BufferedWriter(new FileWriter("record.txt", true))) {
+                        recordWriter.write(recordLine);
+                        recordWriter.newLine();
+                    } catch (IOException e) {
+                        System.out.println("Error writing to record file: " + e.getMessage());
+                    }
+
                     try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
                         log.write(java.time.LocalDateTime.now() + " - Book issued: " + foundBook[1] + " by " + currentUserName);
                         log.newLine();
@@ -403,6 +415,7 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Return Book
     public static void returnBook() {
         while (true) {
             try {
@@ -429,8 +442,7 @@ public class LibraryManagementSystem {
                 String[] foundBook = null;
 
                 for (String[] b : books) {
-                    if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure index 5 exists
-                    if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
+                    if (b.length >= 6 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
                         String borrowedBy = b[5];
                         if (borrowedBy != null && borrowedBy.equals(currentUserID)) {
                             foundBook = b;
@@ -442,8 +454,7 @@ public class LibraryManagementSystem {
                 if (foundBook == null) {
                     System.out.println("Book not found or you did not borrow this book!");
                 } else {
-                    int availableCopies = 0;
-                    try { availableCopies = Integer.parseInt(foundBook[4]); } catch (Exception ex) { availableCopies = 0; }
+                    int availableCopies = Integer.parseInt(foundBook[4]);
                     foundBook[4] = String.valueOf(availableCopies + 1);
                     foundBook[5] = "";
                     currentUser[5] = String.valueOf(borrowedCount - 1);
@@ -452,11 +463,30 @@ public class LibraryManagementSystem {
                     saveUsers();
                     System.out.println("Book returned successfully!");
 
-                    try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                        log.write(java.time.LocalDateTime.now() + " - Book returned: " + foundBook[1] + " by " + currentUserName);
-                        log.newLine();
+                    // Update record.txt return date
+                    try {
+                        File file = new File("record.txt");
+                        List<String> lines = new ArrayList<>();
+                        BufferedReader reader = new BufferedReader(new FileReader(file));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            String[] parts = line.split(",");
+                            if (parts.length >= 7 && parts[0].equals(currentUserID) && parts[3].equals(foundBook[0]) && parts[6].equals("Not Returned")) {
+                                parts[6] = java.time.LocalDate.now().toString();
+                                line = String.join(",", parts);
+                            }
+                            lines.add(line);
+                        }
+                        reader.close();
+
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                        for (String l : lines) {
+                            writer.write(l);
+                            writer.newLine();
+                        }
+                        writer.close();
                     } catch (IOException e) {
-                        System.out.println("Could not write to log: " + e.getMessage());
+                        System.out.println("Error updating record file: " + e.getMessage());
                     }
                 }
 
@@ -470,6 +500,7 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Check Book Availability
     public static void checkBookAvailability() {
         while (true) {
             System.out.print("Enter Book ID or Name to check availability: ");
@@ -477,30 +508,29 @@ public class LibraryManagementSystem {
             String[] foundBook = null;
 
             for (String[] b : books) {
-                if (b.length < 6) b = Arrays.copyOf(b, 6);
-                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
-                    foundBook = b;
-                    break;
+                try {
+                    if (b.length >= 5 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                        foundBook = b;
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error reading book data: " + e.getMessage());
                 }
             }
 
             if (foundBook == null) {
                 System.out.println("Book not found!");
             } else {
-                int copies = 0;
-                try { copies = Integer.parseInt(foundBook[4]); } catch (Exception ex) { copies = 0; }
-                System.out.println("\n--- Book Details ---");
-                System.out.println("Book ID: " + foundBook[0]);
-                System.out.println("Book Name: " + foundBook[1]);
-                System.out.println("Author: " + foundBook[2]);
-                System.out.println("Section: " + foundBook[3]);
-                System.out.println("Available Copies: " + copies);
-
-                try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                    log.write(java.time.LocalDateTime.now() + " - Book availability checked: " + foundBook[1] + " by " + currentUserName);
-                    log.newLine();
-                } catch (IOException e) {
-                    System.out.println("Could not write to log: " + e.getMessage());
+                try {
+                    int copies = Integer.parseInt(foundBook[4]);
+                    System.out.println("\n--- Book Details ---");
+                    System.out.println("Book ID: " + foundBook[0]);
+                    System.out.println("Book Name: " + foundBook[1]);
+                    System.out.println("Author: " + foundBook[2]);
+                    System.out.println("Section: " + foundBook[3]);
+                    System.out.println("Available Copies: " + copies);
+                } catch (Exception e) {
+                    System.out.println("Error displaying book: " + e.getMessage());
                 }
             }
 
@@ -510,96 +540,112 @@ public class LibraryManagementSystem {
         }
     }
 
-    public static void displayBorrowLimit() {
-        while (true) {
-            String[] currentUser = null;
-            for (String[] u : users) {
-                if (u[0].equals(currentUserID)) {
-                    currentUser = u;
-                    break;
-                }
+    // Display Borrow Limit
+// Display Borrow Limit
+public static void displayBorrowLimit() {
+    while (true) {
+        String[] currentUser = null;
+        for (String[] u : users) {
+            if (u[0].equals(currentUserID)) {
+                currentUser = u;
+                break;
             }
-
-            if (currentUser == null) {
-                System.out.println("User not found!");
-                return;
-            }
-
-            int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
-            int borrowedCount = Integer.parseInt(currentUser[5]);
-            int remaining = borrowLimit - borrowedCount;
-
-            System.out.println("Your borrow limit: " + borrowLimit + " books.");
-            System.out.println("Books already borrowed: " + borrowedCount);
-            System.out.println("You can still borrow: " + remaining + " books.");
-
-            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
-                log.newLine();
-            } catch (IOException e) {
-                System.out.println("Could not write to log: " + e.getMessage());
-            }
-
-            System.out.print("Do you want to check borrow limit again? (yes/no): ");
-            String choice = sc.nextLine().trim();
-            if (!choice.equalsIgnoreCase("yes")) break;
         }
-    }
 
-    public static void displayRecords() {
-        if (!isStaff()) {
-            System.out.println("Access denied! Only Staff can view records.");
+        if (currentUser == null) {
+            System.out.println("User not found!");
             return;
         }
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("record.txt"));
-            String line;
-            boolean found = false;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
+        int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
+        int borrowedCount = Integer.parseInt(currentUser[5]);
+        int remaining = borrowLimit - borrowedCount;
+
+        System.out.println("Your borrow limit: " + borrowLimit + " books.");
+        System.out.println("Books already borrowed: " + borrowedCount);
+        System.out.println("You can still borrow: " + remaining + " books.");
+
+        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+            log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
+            log.newLine();
+        } catch (IOException e) {
+            System.out.println("Could not write to log: " + e.getMessage());
+        }
+
+        System.out.print("Do you want to check borrow limit again? (yes/no): ");
+        String choice = sc.nextLine().trim();
+        if (!choice.equalsIgnoreCase("yes")) break;
+    }
+}
+
+
+    // Display All Books
+    public static void displayBooks() {
+        System.out.println("\n--- All Books ---");
+        for (String[] b : books) {
+            System.out.println("ID: " + b[0] + ", Name: " + b[1] + ", Author: " + b[2] + ", Section: " + b[3] + ", Copies: " + b[4]);
+        }
+    }
+
+    // Search Books
+    public static void searchBook() {
+        System.out.print("Enter book name to search: ");
+        String name = sc.nextLine().trim().toLowerCase();
+        boolean found = false;
+        for (String[] b : books) {
+            if (b[1].toLowerCase().contains(name)) {
+                System.out.println("ID: " + b[0] + ", Name: " + b[1] + ", Author: " + b[2] + ", Section: " + b[3] + ", Copies: " + b[4]);
                 found = true;
             }
-            br.close();
-            if (!found) System.out.println("No records found.");
-        } catch (Exception e) {
-            System.out.println("No record file found.");
         }
+        if (!found) System.out.println("No book found with name containing: " + name);
     }
 
-    public static void exit() {
-        while (true) {
-            System.out.print("Do you really want to exit? (yes/no): ");
-            String confirm = sc.nextLine().trim();
-
-            if (confirm.equalsIgnoreCase("yes")) {
-                System.out.println("\nThank you for using the Library Management System!");
-                System.out.println("We hope to see you again soon. Have a great day! ");
-                System.out.println("Exiting... Goodbye!");
-                System.exit(0);
-            } else if (confirm.equalsIgnoreCase("no")) {
-                System.out.println("Returning to main menu...\n");
-                return;
-            } else {
-                System.out.println("Invalid choice. Please enter 'yes' or 'no'.");
-            }
-        }
+    // Sort Books
+    public static void sortBooks() {
+        books.sort(Comparator.comparing(b -> b[1].toLowerCase()));
+        System.out.println("Books sorted by name!");
     }
 
-    public static void loadUsers() {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("users.txt"));
+    // Display Records
+    public static void displayRecords() {
+        try (BufferedReader br = new BufferedReader(new FileReader("record.txt"))) {
+            System.out.println("\n--- Library Records ---");
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] u = line.split(",");
-                if (u.length < 6) u = Arrays.copyOf(u, 6); // ensure 6 elements
-                if (u[5] == null) u[5] = "0";
-                users.add(u);
+                String[] parts = line.split(",");
+                if (parts.length >= 7) {
+                    System.out.println("UserID: " + parts[0] + ", Name: " + parts[1] + ", Role: " + parts[2] + 
+                                       ", BookID: " + parts[3] + ", BookName: " + parts[4] + ", IssueDate: " + parts[5] + 
+                                       ", ReturnDate: " + parts[6]);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No records found.");
+        }
+    }
+
+    // Exit
+    public static void exit() {
+        saveUsers();
+        saveBooks();
+        System.out.println("Thank you for using the Library Management System. Goodbye!");
+        System.exit(0);
+    }
+
+    // File Handling
+    public static void loadUsers() {
+        try {
+            File file = new File("users.txt");
+            if (!file.exists()) return;
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                users.add(line.split(","));
             }
             br.close();
-        } catch (Exception e) {
-            System.out.println("users.txt not found. Starting with empty list.");
+        } catch (IOException e) {
+            System.out.println("Error loading users: " + e.getMessage());
         }
     }
 
@@ -611,25 +657,23 @@ public class LibraryManagementSystem {
                 bw.newLine();
             }
             bw.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error saving users: " + e.getMessage());
         }
     }
 
     public static void loadBooks() {
         try {
-            BufferedReader br = new BufferedReader(new FileReader("books.txt"));
+            File file = new File("books.txt");
+            if (!file.exists()) return;
+            BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] b = line.split(",");
-                if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure 6 elements
-                if (b[5] == null) b[5] = "";
-                books.add(b);
+                books.add(line.split(","));
             }
             br.close();
-        } catch (Exception e) {
-            System.out.println("books.txt not found. Starting with empty list.");
+        } catch (IOException e) {
+            System.out.println("Error loading books: " + e.getMessage());
         }
     }
 
@@ -641,152 +685,17 @@ public class LibraryManagementSystem {
                 bw.newLine();
             }
             bw.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error saving books: " + e.getMessage());
         }
     }
 
     public static void createLogFile() {
         try {
-            File logFile = new File("book_log.txt");
-            if (!logFile.exists()) {
-                logFile.createNewFile();
-            }
+            File file = new File("book_log.txt");
+            if (!file.exists()) file.createNewFile();
         } catch (IOException e) {
-            System.out.println("Could not create log file: " + e.getMessage());
-        }
-    }
-
-    public static void displayBooks() {
-        try {
-            if (books.isEmpty()) {
-                System.out.println("No books available in the library.");
-                return;
-            }
-
-            System.out.println("\n--- All Books ---");
-            System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
-            System.out.println("----------------------------------------------------------------------");
-
-            for (String[] b : books) {
-                String section = (b.length > 3) ? b[3] : "";
-                String copies = (b.length > 4) ? b[4] : "0";
-                System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], section, copies);
-            }
-
-            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                log.write(java.time.LocalDateTime.now() + " - Books displayed to user " + currentUserName);
-                log.newLine();
-            } catch (IOException e) {
-                System.out.println("Could not write to log: " + e.getMessage());
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error displaying books: " + e.getMessage());
-        }
-    }
-
-    public static void searchBook() {
-        try {
-            if (books.isEmpty()) {
-                System.out.println("No books available in the library.");
-                return;
-            }
-
-            System.out.print("Enter Book ID, Name, or Author to search: ");
-            String query = sc.nextLine().trim().toLowerCase();
-
-            if (query.isEmpty()) {
-                System.out.println("Search query cannot be empty.");
-                return;
-            }
-
-            boolean found = false;
-            System.out.println("\n--- Search Results ---");
-            System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
-            System.out.println("----------------------------------------------------------------------");
-
-            for (String[] b : books) {
-                if ((b[0].toLowerCase().contains(query)) || (b[1].toLowerCase().contains(query)) || (b[2].toLowerCase().contains(query))) {
-                    String section = (b.length > 3) ? b[3] : "";
-                    String copies = (b.length > 4) ? b[4] : "0";
-                    System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], section, copies);
-                    found = true;
-                }
-            }
-
-            if (!found) {
-                System.out.println("No books found matching: " + query);
-            }
-
-            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                log.write(java.time.LocalDateTime.now() + " - Book search performed by " + currentUserName + " for: " + query);
-                log.newLine();
-            } catch (IOException e) {
-                System.out.println("Could not write to log: " + e.getMessage());
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error searching books: " + e.getMessage());
-        }
-    }
-
-    public static void sortBooks() {
-        if (!isStaff()) {
-            System.out.println("Only staff can sort the books!");
-            return;
-        }
-
-        try {
-            if (books.isEmpty()) {
-                System.out.println("No books available to sort.");
-                return;
-            }
-
-            System.out.println("\nSort books by:");
-            System.out.println("1. Name");
-            System.out.println("2. Author");
-            System.out.println("3. ID");
-            System.out.println("4. Copies");
-            System.out.print("Enter your choice: ");
-            int choice;
-            try {
-                choice = Integer.parseInt(sc.nextLine().trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number from 1-4.");
-                return;
-            }
-
-            Comparator<String[]> comparator;
-
-            switch (choice) {
-                case 1: comparator = Comparator.comparing(b -> b[1].toLowerCase()); break;
-                case 2: comparator = Comparator.comparing(b -> b[2].toLowerCase()); break;
-                case 3: comparator = Comparator.comparing(b -> b[0]); break;
-                case 4: comparator = Comparator.comparingInt(b -> {
-                    try { return Integer.parseInt(b[4]); } catch (Exception ex) { return 0; }
-                }); break;
-                default:
-                    System.out.println("Invalid choice. Please enter 1-4.");
-                    return;
-            }
-
-            books.sort(comparator);
-
-            saveBooks();
-
-            System.out.println("Books sorted successfully!");
-            displayBooks();
-
-            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                log.write(java.time.LocalDateTime.now() + " - Books sorted by choice " + choice + " by user " + currentUserName);
-                log.newLine();
-            } catch (IOException e) {
-                System.out.println("Could not write to log: " + e.getMessage());
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error sorting books: " + e.getMessage());
+            System.out.println("Error creating log file: " + e.getMessage());
         }
     }
 }

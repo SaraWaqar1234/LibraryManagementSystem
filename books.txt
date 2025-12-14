@@ -6,11 +6,10 @@
 6,American Literature,Herman Melville,English,2
 7,British Novels,Jane Austen,English,3
 8,World Literature,Leo Tolstoy,English,4
-9,Poetic Forms,Edgar Allan Poe,English,2
+9,Poetic Forms,Edgar Allan Poe,English,1,266
 10,Essay Writing Techniques,George Orwell,English,3
-
-11,Java Basics,John Smith,Computer Science,5
-12,Python Programming,Sarah Khan,Computer Science,3
+11,Java Basics,John Smith,Computer Science,2,102
+12,Python Programming,Sarah Khan,Computer Science,2,266
 13,C Programming,Brian Kernighan,Computer Science,5
 14,Data Structures,Robert Lafore,Computer Science,2
 15,Operating Systems,Abraham Silberschatz,Computer Science,3
@@ -19,7 +18,6 @@
 18,Artificial Intelligence,Stuart Russell,Computer Science,3
 19,Machine Learning,Bishop,Computer Science,2
 20,Deep Learning,Ian Goodfellow,Computer Science,1
-
 21,World History,Howard Zinn,History,4
 22,Ancient Civilizations,James Morris,History,3
 23,Medieval Europe,Barbara Tuchman,History,2
@@ -30,7 +28,6 @@
 28,Colonial History,Philip Curtin,History,2
 29,History of Philosophy,Bertrand Russell,History,3
 30,History of Art,E.H. Gombrich,History,2
-
 31,Physics Fundamentals,Isaac Newton,Science,4
 32,Chemistry Basics,Marie Curie,Science,3
 33,Biology Essentials,Charles Darwin,Science,5
@@ -41,7 +38,6 @@
 38,Nuclear Physics,Richard Feynman,Science,3
 39,Chemical Reactions,Lavoisier,Science,2
 40,Scientific Method,Francis Bacon,Science,3
-
 41,Self Help,Stephen Covey,Social Studies,4
 42,Leadership Skills,John Maxwell,Social Studies,3
 43,Personal Finance,Robert Kiyosaki,Social Studies,5

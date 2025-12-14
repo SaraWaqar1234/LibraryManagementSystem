@@ -1,1 +1,10 @@
 2025-12-14T16:04:41.263392200 - Books displayed to user Sara
+2025-12-14T16:42:39.043828100 - Book search performed by hamna for: java basics
+2025-12-14T16:43:18.281862100 - Borrow limit checked by: hamna
+2025-12-14T16:43:21.206560500 - Borrow limit checked by: hamna
+2025-12-14T16:43:44.512889500 - Book issued: Java Basics by hamna
+2025-12-14T16:44:46.830116 - Book issued: Python Programming by hamna
+2025-12-14T16:45:07.088606 - Book issued: Poetic Forms by hamna
+2025-12-14T16:55:44.247387100 - Book issued: Java Basics by Sara
+2025-12-14T16:59:28.047438400 - Book issued: Java Basics by Sara
+2025-12-14T17:03:23.562803800 - Borrow limit checked by: hamna
