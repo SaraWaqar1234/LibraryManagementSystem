@@ -9,35 +9,36 @@ public class LibraryManagementSystem {
     static String currentUserName = "";
 
     public static void main(String[] args) {
+        createLogFile();
         loadUsers();
         loadBooks();
         boolean loggedIn = false;
 
         System.out.println("Welcome to the Library Management System!");
 
-       while (!loggedIn) {
-    System.out.print("Do you want to log in? (yes/no): ");
-    String choice = sc.nextLine().trim();
+        while (!loggedIn) {
+            System.out.print("Do you want to log in? (yes/no): ");
+            String choice = sc.nextLine().trim();
 
-    if (choice.equalsIgnoreCase("yes")) {
-        loggedIn = login();
-    } else if (choice.equalsIgnoreCase("no")) {
-        while (true) {
-            System.out.print("Do you want to exit? (yes/no): ");
-            String exitChoice = sc.nextLine().trim();
-            if (exitChoice.equalsIgnoreCase("yes")) {
-                System.out.println("Exiting the system. Goodbye!");
-                return;
-            } else if (exitChoice.equalsIgnoreCase("no")) {
-                break; // go back to login prompt
+            if (choice.equalsIgnoreCase("yes")) {
+                loggedIn = login();
+            } else if (choice.equalsIgnoreCase("no")) {
+                while (true) {
+                    System.out.print("Do you want to exit? (yes/no): ");
+                    String exitChoice = sc.nextLine().trim();
+                    if (exitChoice.equalsIgnoreCase("yes")) {
+                        System.out.println("Exiting the system. Goodbye!");
+                        return;
+                    } else if (exitChoice.equalsIgnoreCase("no")) {
+                        break; // go back to login prompt
+                    } else {
+                        System.out.println("Invalid choice. Enter 'yes' or 'no'.");
+                    }
+                }
             } else {
                 System.out.println("Invalid choice. Enter 'yes' or 'no'.");
             }
         }
-    } else {
-        System.out.println("Invalid choice. Enter 'yes' or 'no'.");
-    }
-}
 
         mainMenu();
     }
@@ -178,246 +179,229 @@ public class LibraryManagementSystem {
         }
     }
 
-   public static void addBook() {
-    // Only staff can add books
-    if (!isStaff()) {
-        System.out.println("Only staff can add books!");
-        return;
-    }
-
-    try {
-        // ----------- Book ID -----------
-        String id;
-        while (true) {
-            System.out.print("Enter Book ID (leave empty to auto-generate): ");
-            id = sc.nextLine().trim();
-            if (id.isEmpty()) {
-                id = "B" + (books.size() + 1); // auto-generate ID
-                System.out.println("Generated Book ID: " + id);
-            }
-
-            boolean duplicate = false;
-            for (String[] b : books) {
-                if (b[0].equalsIgnoreCase(id)) {
-                    duplicate = true;
-                    break;
-                }
-            }
-            if (!duplicate) break;
-            System.out.println("Book ID already exists. Enter a different one.");
-        }
-
-        // ----------- Book Name -----------
-        String name;
-        while (true) {
-            System.out.print("Enter Book Name: ");
-            name = sc.nextLine().trim();
-            if (!name.isEmpty()) break;
-            System.out.println("Book name cannot be empty.");
-        }
-
-        // ----------- Author -----------
-        String author;
-        while (true) {
-            System.out.print("Enter Author: ");
-            author = sc.nextLine().trim();
-            if (!author.isEmpty()) break;
-            System.out.println("Author cannot be empty.");
-        }
-
-        // Check duplicate name + author
-        boolean duplicateCombo = false;
-        for (String[] b : books) {
-            if (b[1].equalsIgnoreCase(name) && b[2].equalsIgnoreCase(author)) {
-                duplicateCombo = true;
-                break;
-            }
-        }
-        if (duplicateCombo) {
-            System.out.println("This book by this author already exists!");
+    public static void addBook() {
+        if (!isStaff()) {
+            System.out.println("Only staff can add books!");
             return;
         }
 
-        // ----------- Section / Genre -----------
-        System.out.print("Enter Section/Genre (optional): ");
-        String section = sc.nextLine().trim();
-
-        // ----------- Copies -----------
-        int copies;
-        while (true) {
-            try {
-                System.out.print("Enter number of copies: ");
-                copies = Integer.parseInt(sc.nextLine().trim());
-                if (copies <= 0) {
-                    System.out.println("Number of copies must be positive. Try again.");
-                    continue;
-                }
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number! Enter an integer.");
-            }
-        }
-
-        // ----------- Confirmation -----------
-        System.out.println("\nConfirm adding book:");
-        System.out.println("ID: " + id + ", Name: " + name + ", Author: " + author + ", Section: " + section + ", Copies: " + copies);
-        System.out.print("Add this book? (yes/no): ");
-        String confirm = sc.nextLine().trim();
-        if (!confirm.equalsIgnoreCase("yes")) {
-            System.out.println("Book addition cancelled.");
-            return;
-        }
-
-        // ----------- Add Book to List -----------
-String[] newBook = {id, name, author, section, String.valueOf(copies), ""}; // last "" is borrowedBy
-books.add(newBook);
-
-// ----------- Save to books.txt -----------
-saveBooks();
-
-        // ----------- Log Addition -----------
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Book added: " + name + " by " + author + " by user " + currentUserName);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-        System.out.println("Book added successfully!");
-
-    } catch (Exception e) {
-        System.out.println("Error adding book: " + e.getMessage());
-    }
-}
-       public static void removeBook() {
-    // Only staff can remove books
-    if (!isStaff()) {
-        System.out.println("Only staff can remove books!");
-        return;
-    }
-
-    try {
-        // ----------- Book ID Input -----------
-        System.out.print("Enter Book ID to remove: ");
-        String id = sc.nextLine().trim();
-        if (id.isEmpty()) {
-            System.out.println("Book ID cannot be empty!");
-            return;
-        }
-
-        // ----------- Find Book -----------
-        String[] bookToRemove = null;
-        for (String[] b : books) {
-            if (b[0].equalsIgnoreCase(id)) {
-                bookToRemove = b;
-                break;
-            }
-        }
-
-        if (bookToRemove == null) {
-            System.out.println("Book not found with ID: " + id);
-            return;
-        }
-
-        // ----------- Confirmation -----------
-        System.out.println("\nConfirm removing book:");
-        System.out.println("ID: " + bookToRemove[0] + ", Name: " + bookToRemove[1] + ", Author: " + bookToRemove[2] + ", Section: " + bookToRemove[3] + ", Copies: " + bookToRemove[4]);
-        System.out.print("Remove this book? (yes/no): ");
-        String confirm = sc.nextLine().trim();
-        if (!confirm.equalsIgnoreCase("yes")) {
-            System.out.println("Book removal cancelled.");
-            return;
-        }
-
-        // ----------- Remove Book from List -----------
-        books.remove(bookToRemove);
-
-        // ----------- Save Updated Books -----------
-        saveBooks();
-
-        System.out.println("Book removed successfully!");
-
-        // ----------- Log Removal -----------
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Book removed: " + bookToRemove[1] + " by " + bookToRemove[2] + " by user " + currentUserName);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-    } catch (Exception e) {
-        System.out.println("Error removing book: " + e.getMessage());
-    }
-} 
-    
- 
-   public static void issueBook() {
-    while (true) {
         try {
-            // find current user
-            String[] currentUser = null;
-            for (String[] u : users) {
-                if (u[0].equals(currentUserID)) {
-                    currentUser = u;
-                    break;
+            String id;
+            while (true) {
+                System.out.print("Enter Book ID (leave empty to auto-generate): ");
+                id = sc.nextLine().trim();
+                if (id.isEmpty()) {
+                    id = "B" + (books.size() + 1); 
+                    System.out.println("Generated Book ID: " + id);
                 }
-            }
-            if (currentUser == null) {
-                System.out.println("User not found!");
-                return;
-            }
 
-            int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
-            int borrowedCount = Integer.parseInt(currentUser[5]);
-            if (borrowedCount >= borrowLimit) {
-                System.out.println("You have reached your borrow limit.");
-                return;
-            }
-
-            System.out.print("Enter Book ID or Name to issue: ");
-            String input = sc.nextLine().trim();
-            String[] foundBook = null;
-
-            for (String[] b : books) {
-                if (b.length >= 6 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
-                    int copies = Integer.parseInt(b[4]);
-                    if (copies > 0) {
-                        foundBook = b;
+                boolean duplicate = false;
+                for (String[] b : books) {
+                    if (b.length > 0 && b[0].equalsIgnoreCase(id)) {
+                        duplicate = true;
                         break;
                     }
                 }
+                if (!duplicate) break;
+                System.out.println("Book ID already exists. Enter a different one.");
             }
 
-            if (foundBook == null) {
-                System.out.println("Book not found or no copies available!");
-            } else {
-                int availableCopies = Integer.parseInt(foundBook[4]);
-                foundBook[4] = String.valueOf(availableCopies - 1);
-                foundBook[5] = currentUserID; // borrowedBy
-                currentUser[5] = String.valueOf(borrowedCount + 1);
+            String name;
+            while (true) {
+                System.out.print("Enter Book Name: ");
+                name = sc.nextLine().trim();
+                if (!name.isEmpty()) break;
+                System.out.println("Book name cannot be empty.");
+            }
 
-                saveBooks();
-                saveUsers();
+            String author;
+            while (true) {
+                System.out.print("Enter Author: ");
+                author = sc.nextLine().trim();
+                if (!author.isEmpty()) break;
+                System.out.println("Author cannot be empty.");
+            }
 
-                System.out.println("Book issued successfully!");
+            boolean duplicateCombo = false;
+            for (String[] b : books) {
+                if (b.length >= 3 && b[1].equalsIgnoreCase(name) && b[2].equalsIgnoreCase(author)) {
+                    duplicateCombo = true;
+                    break;
+                }
+            }
+            if (duplicateCombo) {
+                System.out.println("This book by this author already exists!");
+                return;
+            }
 
-                try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                    log.write(java.time.LocalDateTime.now() + " - Book issued: " + foundBook[1] + " by " + currentUserName);
-                    log.newLine();
-                } catch (IOException e) {
-                    System.out.println("Could not write to log: " + e.getMessage());
+            System.out.print("Enter Section/Genre (optional): ");
+            String section = sc.nextLine().trim();
+
+            int copies;
+            while (true) {
+                try {
+                    System.out.print("Enter number of copies: ");
+                    copies = Integer.parseInt(sc.nextLine().trim());
+                    if (copies <= 0) {
+                        System.out.println("Number of copies must be positive. Try again.");
+                        continue;
+                    }
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number! Enter an integer.");
                 }
             }
 
-            System.out.print("Do you want to issue another book? (yes/no): ");
-            String choice = sc.nextLine().trim();
-            if (!choice.equalsIgnoreCase("yes")) break;
+            System.out.println("\nConfirm adding book:");
+            System.out.println("ID: " + id + ", Name: " + name + ", Author: " + author + ", Section: " + section + ", Copies: " + copies);
+            System.out.print("Add this book? (yes/no): ");
+            String confirm = sc.nextLine().trim();
+            if (!confirm.equalsIgnoreCase("yes")) {
+                System.out.println("Book addition cancelled.");
+                return;
+            }
+
+            String[] newBook = {id, name, author, section, String.valueOf(copies), ""};
+            books.add(newBook);
+
+            saveBooks();
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Book added: " + name + " by " + author + " by user " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+            System.out.println("Book added successfully!");
 
         } catch (Exception e) {
-            System.out.println("An error occurred while issuing the book. Please try again.");
+            System.out.println("Error adding book: " + e.getMessage());
         }
     }
-}
+
+    public static void removeBook() {
+        if (!isStaff()) {
+            System.out.println("Only staff can remove books!");
+            return;
+        }
+
+        try {
+            System.out.print("Enter Book ID to remove: ");
+            String id = sc.nextLine().trim();
+            if (id.isEmpty()) {
+                System.out.println("Book ID cannot be empty!");
+                return;
+            }
+
+            String[] bookToRemove = null;
+            for (String[] b : books) {
+                if (b.length > 0 && b[0].equalsIgnoreCase(id)) {
+                    bookToRemove = b;
+                    break;
+                }
+            }
+
+            if (bookToRemove == null) {
+                System.out.println("Book not found with ID: " + id);
+                return;
+            }
+
+            System.out.println("\nConfirm removing book:");
+            System.out.println("ID: " + bookToRemove[0] + ", Name: " + bookToRemove[1] + ", Author: " + bookToRemove[2] + ", Section: " + bookToRemove[3] + ", Copies: " + bookToRemove[4]);
+            System.out.print("Remove this book? (yes/no): ");
+            String confirm = sc.nextLine().trim();
+            if (!confirm.equalsIgnoreCase("yes")) {
+                System.out.println("Book removal cancelled.");
+                return;
+            }
+
+            books.remove(bookToRemove);
+
+            saveBooks();
+
+            System.out.println("Book removed successfully!");
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Book removed: " + bookToRemove[1] + " by " + bookToRemove[2] + " by user " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error removing book: " + e.getMessage());
+        }
+    }
+
+    public static void issueBook() {
+        while (true) {
+            try {
+                String[] currentUser = null;
+                for (String[] u : users) {
+                    if (u[0].equals(currentUserID)) {
+                        currentUser = u;
+                        break;
+                    }
+                }
+                if (currentUser == null) {
+                    System.out.println("User not found!");
+                    return;
+                }
+
+                int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
+                int borrowedCount = Integer.parseInt(currentUser[5]);
+                if (borrowedCount >= borrowLimit) {
+                    System.out.println("You have reached your borrow limit.");
+                    return;
+                }
+
+                System.out.print("Enter Book ID or Name to issue: ");
+                String input = sc.nextLine().trim();
+                String[] foundBook = null;
+
+                for (String[] b : books) {
+                    if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure index 5 exists
+                    if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
+                        int copies = 0;
+                        try { copies = Integer.parseInt(b[4]); } catch (Exception ex) { copies = 0; }
+                        if (copies > 0) {
+                            foundBook = b;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundBook == null) {
+                    System.out.println("Book not found or no copies available!");
+                } else {
+                    int availableCopies = Integer.parseInt(foundBook[4]);
+                    foundBook[4] = String.valueOf(availableCopies - 1);
+                    foundBook[5] = currentUserID;
+                    currentUser[5] = String.valueOf(borrowedCount + 1);
+
+                    saveBooks();
+                    saveUsers();
+
+                    System.out.println("Book issued successfully!");
+
+                    try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                        log.write(java.time.LocalDateTime.now() + " - Book issued: " + foundBook[1] + " by " + currentUserName);
+                        log.newLine();
+                    } catch (IOException e) {
+                        System.out.println("Could not write to log: " + e.getMessage());
+                    }
+                }
+
+                System.out.print("Do you want to issue another book? (yes/no): ");
+                String choice = sc.nextLine().trim();
+                if (!choice.equalsIgnoreCase("yes")) break;
+
+            } catch (Exception e) {
+                System.out.println("An error occurred while issuing the book. Please try again.");
+            }
+        }
+    }
 
     public static void returnBook() {
         while (true) {
@@ -445,7 +429,8 @@ saveBooks();
                 String[] foundBook = null;
 
                 for (String[] b : books) {
-                    if (b.length >= 6 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
+                    if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure index 5 exists
+                    if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
                         String borrowedBy = b[5];
                         if (borrowedBy != null && borrowedBy.equals(currentUserID)) {
                             foundBook = b;
@@ -457,7 +442,8 @@ saveBooks();
                 if (foundBook == null) {
                     System.out.println("Book not found or you did not borrow this book!");
                 } else {
-                    int availableCopies = Integer.parseInt(foundBook[4]);
+                    int availableCopies = 0;
+                    try { availableCopies = Integer.parseInt(foundBook[4]); } catch (Exception ex) { availableCopies = 0; }
                     foundBook[4] = String.valueOf(availableCopies + 1);
                     foundBook[5] = "";
                     currentUser[5] = String.valueOf(borrowedCount - 1);
@@ -465,15 +451,15 @@ saveBooks();
                     saveBooks();
                     saveUsers();
                     System.out.println("Book returned successfully!");
-                }
-                
+
                     try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-                    log.write(java.time.LocalDateTime.now() + " - Book returned: " + foundBook[1] + " by " + currentUserName);
-                    log.newLine();
-                } catch (IOException e) {
-                    System.out.println("Could not write to log: " + e.getMessage());
+                        log.write(java.time.LocalDateTime.now() + " - Book returned: " + foundBook[1] + " by " + currentUserName);
+                        log.newLine();
+                    } catch (IOException e) {
+                        System.out.println("Could not write to log: " + e.getMessage());
+                    }
                 }
-            }
+
                 System.out.print("Do you want to return another book? (yes/no): ");
                 String choice = sc.nextLine().trim();
                 if (!choice.equalsIgnoreCase("yes")) break;
@@ -491,40 +477,33 @@ saveBooks();
             String[] foundBook = null;
 
             for (String[] b : books) {
-                try {
-                    if (b.length >= 5 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
-                        foundBook = b;
-                        break;
-                    }
-                } catch (Exception e) {
-                    System.out.println("Error reading book data: " + e.getMessage());
+                if (b.length < 6) b = Arrays.copyOf(b, 6);
+                if (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input)) {
+                    foundBook = b;
+                    break;
                 }
             }
 
             if (foundBook == null) {
                 System.out.println("Book not found!");
             } else {
-                try {
-                    int copies = Integer.parseInt(foundBook[4]);
-                    System.out.println("\n--- Book Details ---");
-                    System.out.println("Book ID: " + foundBook[0]);
-                    System.out.println("Book Name: " + foundBook[1]);
-                    System.out.println("Author: " + foundBook[2]);
-                    System.out.println("Section: " + foundBook[3]);
-                    System.out.println("Available Copies: " + copies);
-                } catch (Exception e) {
-                    System.out.println("Error displaying book: " + e.getMessage());
+                int copies = 0;
+                try { copies = Integer.parseInt(foundBook[4]); } catch (Exception ex) { copies = 0; }
+                System.out.println("\n--- Book Details ---");
+                System.out.println("Book ID: " + foundBook[0]);
+                System.out.println("Book Name: " + foundBook[1]);
+                System.out.println("Author: " + foundBook[2]);
+                System.out.println("Section: " + foundBook[3]);
+                System.out.println("Available Copies: " + copies);
+
+                try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                    log.write(java.time.LocalDateTime.now() + " - Book availability checked: " + foundBook[1] + " by " + currentUserName);
+                    log.newLine();
+                } catch (IOException e) {
+                    System.out.println("Could not write to log: " + e.getMessage());
                 }
             }
-            
-     if (foundBook != null) {
-    try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-        log.write(java.time.LocalDateTime.now() + " - Book availability checked: " + foundBook[1] + " by " + currentUserName);
-        log.newLine();
-    } catch (IOException e) {
-        System.out.println("Could not write to log: " + e.getMessage());
-    }
-}
+
             System.out.print("Do you want to check another book? (yes/no): ");
             String choice = sc.nextLine().trim();
             if (!choice.equalsIgnoreCase("yes")) break;
@@ -553,12 +532,13 @@ saveBooks();
             System.out.println("Your borrow limit: " + borrowLimit + " books.");
             System.out.println("Books already borrowed: " + borrowedCount);
             System.out.println("You can still borrow: " + remaining + " books.");
+
             try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
-            log.newLine();
-}           catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-}
+                log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
 
             System.out.print("Do you want to check borrow limit again? (yes/no): ");
             String choice = sc.nextLine().trim();
@@ -587,32 +567,35 @@ saveBooks();
         }
     }
 
-  public static void exit() {
-    while (true) {
-        System.out.print("Do you really want to exit? (yes/no): ");
-        String confirm = sc.nextLine().trim();
+    public static void exit() {
+        while (true) {
+            System.out.print("Do you really want to exit? (yes/no): ");
+            String confirm = sc.nextLine().trim();
 
-        if (confirm.equalsIgnoreCase("yes")) {
-            System.out.println("\nThank you for using the Library Management System!");
-            System.out.println("We hope to see you again soon. Have a great day! ");
-            System.out.println("Exiting... Goodbye!");
-            System.exit(0);
-        } else if (confirm.equalsIgnoreCase("no")) {
-            System.out.println("Returning to main menu...\n");
-            return;
-        } else {
-            System.out.println("Invalid choice. Please enter 'yes' or 'no'.");
+            if (confirm.equalsIgnoreCase("yes")) {
+                System.out.println("\nThank you for using the Library Management System!");
+                System.out.println("We hope to see you again soon. Have a great day! ");
+                System.out.println("Exiting... Goodbye!");
+                System.exit(0);
+            } else if (confirm.equalsIgnoreCase("no")) {
+                System.out.println("Returning to main menu...\n");
+                return;
+            } else {
+                System.out.println("Invalid choice. Please enter 'yes' or 'no'.");
+            }
         }
     }
-}
-
 
     public static void loadUsers() {
         try {
             BufferedReader br = new BufferedReader(new FileReader("users.txt"));
             String line;
             while ((line = br.readLine()) != null) {
-                users.add(line.split(","));
+                if (line.trim().isEmpty()) continue;
+                String[] u = line.split(",");
+                if (u.length < 6) u = Arrays.copyOf(u, 6); // ensure 6 elements
+                if (u[5] == null) u[5] = "0";
+                users.add(u);
             }
             br.close();
         } catch (Exception e) {
@@ -638,7 +621,11 @@ saveBooks();
             BufferedReader br = new BufferedReader(new FileReader("books.txt"));
             String line;
             while ((line = br.readLine()) != null) {
-                books.add(line.split(","));
+                if (line.trim().isEmpty()) continue;
+                String[] b = line.split(",");
+                if (b.length < 6) b = Arrays.copyOf(b, 6); // ensure 6 elements
+                if (b[5] == null) b[5] = "";
+                books.add(b);
             }
             br.close();
         } catch (Exception e) {
@@ -659,143 +646,147 @@ saveBooks();
         }
     }
 
- public static void createLogFile() {
-    try {
-        File logFile = new File("book_log.txt");
-        if (!logFile.exists()) {
-            logFile.createNewFile();
-        }
-    } catch (IOException e) {
-        System.out.println("Could not create log file: " + e.getMessage());
-    }
-}
-    public static void displayBooks() {
-    try {
-        if (books.isEmpty()) {
-            System.out.println("No books available in the library.");
-            return;
-        }
-
-        System.out.println("\n--- All Books ---");
-        System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
-        System.out.println("----------------------------------------------------------------------");
-
-        for (String[] b : books) {
-            System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], b[3], b[4]);
-        }
-
-        // ----------- Log display -----------
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Books displayed to user " + currentUserName);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-    } catch (Exception e) {
-        System.out.println("Error displaying books: " + e.getMessage());
-    }
-}
-public static void searchBook() {
-    try {
-        if (books.isEmpty()) {
-            System.out.println("No books available in the library.");
-            return;
-        }
-
-        System.out.print("Enter Book ID, Name, or Author to search: ");
-        String query = sc.nextLine().trim().toLowerCase();
-
-        if (query.isEmpty()) {
-            System.out.println("Search query cannot be empty.");
-            return;
-        }
-
-        boolean found = false;
-        System.out.println("\n--- Search Results ---");
-        System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
-        System.out.println("----------------------------------------------------------------------");
-
-        for (String[] b : books) {
-            if (b[0].toLowerCase().contains(query) || b[1].toLowerCase().contains(query) || b[2].toLowerCase().contains(query)) {
-                System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], b[3], b[4]);
-                found = true;
-            }
-        }
-
-        if (!found) {
-            System.out.println("No books found matching: " + query);
-        }
-
-        // ----------- Log search -----------
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Book search performed by " + currentUserName + " for: " + query);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-    } catch (Exception e) {
-        System.out.println("Error searching books: " + e.getMessage());
-    }
-}
-public static void sortBooks() {
-    // Only staff can sort books
-    if (!isStaff()) {
-        System.out.println("Only staff can sort the books!");
-        return;
-    }
-
-    try {
-        if (books.isEmpty()) {
-            System.out.println("No books available to sort.");
-            return;
-        }
-
-        System.out.println("\nSort books by:");
-        System.out.println("1. Name");
-        System.out.println("2. Author");
-        System.out.println("3. ID");
-        System.out.println("4. Copies");
-        System.out.print("Enter your choice: ");
-        int choice;
+    public static void createLogFile() {
         try {
-            choice = Integer.parseInt(sc.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a number from 1-4.");
+            File logFile = new File("book_log.txt");
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+        } catch (IOException e) {
+            System.out.println("Could not create log file: " + e.getMessage());
+        }
+    }
+
+    public static void displayBooks() {
+        try {
+            if (books.isEmpty()) {
+                System.out.println("No books available in the library.");
+                return;
+            }
+
+            System.out.println("\n--- All Books ---");
+            System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
+            System.out.println("----------------------------------------------------------------------");
+
+            for (String[] b : books) {
+                String section = (b.length > 3) ? b[3] : "";
+                String copies = (b.length > 4) ? b[4] : "0";
+                System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], section, copies);
+            }
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Books displayed to user " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error displaying books: " + e.getMessage());
+        }
+    }
+
+    public static void searchBook() {
+        try {
+            if (books.isEmpty()) {
+                System.out.println("No books available in the library.");
+                return;
+            }
+
+            System.out.print("Enter Book ID, Name, or Author to search: ");
+            String query = sc.nextLine().trim().toLowerCase();
+
+            if (query.isEmpty()) {
+                System.out.println("Search query cannot be empty.");
+                return;
+            }
+
+            boolean found = false;
+            System.out.println("\n--- Search Results ---");
+            System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", "ID", "Name", "Author", "Section", "Copies");
+            System.out.println("----------------------------------------------------------------------");
+
+            for (String[] b : books) {
+                if ((b[0].toLowerCase().contains(query)) || (b[1].toLowerCase().contains(query)) || (b[2].toLowerCase().contains(query))) {
+                    String section = (b.length > 3) ? b[3] : "";
+                    String copies = (b.length > 4) ? b[4] : "0";
+                    System.out.printf("%-5s %-30s %-20s %-15s %-6s%n", b[0], b[1], b[2], section, copies);
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                System.out.println("No books found matching: " + query);
+            }
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Book search performed by " + currentUserName + " for: " + query);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error searching books: " + e.getMessage());
+        }
+    }
+
+    public static void sortBooks() {
+        if (!isStaff()) {
+            System.out.println("Only staff can sort the books!");
             return;
         }
 
-        Comparator<String[]> comparator;
-
-        switch (choice) {
-            case 1: comparator = Comparator.comparing(b -> b[1].toLowerCase()); break;
-            case 2: comparator = Comparator.comparing(b -> b[2].toLowerCase()); break;
-            case 3: comparator = Comparator.comparing(b -> b[0]); break;
-            case 4: comparator = Comparator.comparingInt(b -> Integer.parseInt(b[4])); break;
-            default:
-                System.out.println("Invalid choice. Please enter 1-4.");
+        try {
+            if (books.isEmpty()) {
+                System.out.println("No books available to sort.");
                 return;
+            }
+
+            System.out.println("\nSort books by:");
+            System.out.println("1. Name");
+            System.out.println("2. Author");
+            System.out.println("3. ID");
+            System.out.println("4. Copies");
+            System.out.print("Enter your choice: ");
+            int choice;
+            try {
+                choice = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number from 1-4.");
+                return;
+            }
+
+            Comparator<String[]> comparator;
+
+            switch (choice) {
+                case 1: comparator = Comparator.comparing(b -> b[1].toLowerCase()); break;
+                case 2: comparator = Comparator.comparing(b -> b[2].toLowerCase()); break;
+                case 3: comparator = Comparator.comparing(b -> b[0]); break;
+                case 4: comparator = Comparator.comparingInt(b -> {
+                    try { return Integer.parseInt(b[4]); } catch (Exception ex) { return 0; }
+                }); break;
+                default:
+                    System.out.println("Invalid choice. Please enter 1-4.");
+                    return;
+            }
+
+            books.sort(comparator);
+
+            saveBooks();
+
+            System.out.println("Books sorted successfully!");
+            displayBooks();
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Books sorted by choice " + choice + " by user " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error sorting books: " + e.getMessage());
         }
-
-        books.sort(comparator);
-
-        // Save the sorted list
-        saveBooks();
-
-        System.out.println("Books sorted successfully!");
-        displayBooks(); // Show sorted list
-
-        // Log the sorting action
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Books sorted by choice " + choice + " by user " + currentUserName);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-    } catch (Exception e) {
-        System.out.println("Error sorting books: " + e.getMessage());
     }
-}
 }
