@@ -289,7 +289,7 @@ saveBooks();
         System.out.println("Error adding book: " + e.getMessage());
     }
 }
-        public static void removeBook() {
+       public static void removeBook() {
     // Only staff can remove books
     if (!isStaff()) {
         System.out.println("Only staff can remove books!");
@@ -304,8 +304,8 @@ saveBooks();
             System.out.println("Book ID cannot be empty!");
             return;
         }
-        
-// ----------- Find Book -----------
+
+        // ----------- Find Book -----------
         String[] bookToRemove = null;
         for (String[] b : books) {
             if (b[0].equalsIgnoreCase(id)) {
@@ -318,6 +318,7 @@ saveBooks();
             System.out.println("Book not found with ID: " + id);
             return;
         }
+
         // ----------- Confirmation -----------
         System.out.println("\nConfirm removing book:");
         System.out.println("ID: " + bookToRemove[0] + ", Name: " + bookToRemove[1] + ", Author: " + bookToRemove[2] + ", Section: " + bookToRemove[3] + ", Copies: " + bookToRemove[4]);
@@ -343,8 +344,12 @@ saveBooks();
         } catch (IOException e) {
             System.out.println("Could not write to log: " + e.getMessage());
         }
+
+    } catch (Exception e) {
+        System.out.println("Error removing book: " + e.getMessage());
     }
-       
+} 
+    
  
    public static void issueBook() {
     while (true) {
@@ -589,7 +594,7 @@ saveBooks();
 
         if (confirm.equalsIgnoreCase("yes")) {
             System.out.println("\nThank you for using the Library Management System!");
-            System.out.println("We hope to see you again soon. Have a great day! 📚");
+            System.out.println("We hope to see you again soon. Have a great day! ");
             System.out.println("Exiting... Goodbye!");
             System.exit(0);
         } else if (confirm.equalsIgnoreCase("no")) {
