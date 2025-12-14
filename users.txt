@@ -7,3 +7,4 @@
 3456,rohan,rohan@email.com,6789,staff,0
 2345,Javeria Waqar,javeria@gmail.com,56tyu,Student,0
 266,hamna,hamnanaeem266@gmail.com,266,student,0
+3490,manal,manal@gmail.com,manu,Staff,0

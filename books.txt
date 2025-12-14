@@ -48,3 +48,4 @@
 48,Psychology Basics,Sigmund Freud,Social Studies,4
 49,Motivation & Success,Napoleon Hill,Social Studies,3
 50,Social Knowledge Compendium,Various Authors,Social Studies,5
+B51,Metamorphisis,Franz Kafka,Fiction,2,

@@ -541,43 +541,41 @@ public class LibraryManagementSystem {
     }
 
     // Display Borrow Limit
-// Display Borrow Limit
-public static void displayBorrowLimit() {
-    while (true) {
-        String[] currentUser = null;
-        for (String[] u : users) {
-            if (u[0].equals(currentUserID)) {
-                currentUser = u;
-                break;
+    public static void displayBorrowLimit() {
+        while (true) {
+            String[] currentUser = null;
+            for (String[] u : users) {
+                if (u[0].equals(currentUserID)) {
+                    currentUser = u;
+                    break;
+                }
             }
+
+            if (currentUser == null) {
+                System.out.println("User not found!");
+                return;
+            }
+
+            int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
+            int borrowedCount = Integer.parseInt(currentUser[5]);
+            int remaining = borrowLimit - borrowedCount;
+
+            System.out.println("Your borrow limit: " + borrowLimit + " books.");
+            System.out.println("Books already borrowed: " + borrowedCount);
+            System.out.println("You can still borrow: " + remaining + " books.");
+
+            try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
+                log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
+                log.newLine();
+            } catch (IOException e) {
+                System.out.println("Could not write to log: " + e.getMessage());
+            }
+
+            System.out.print("Do you want to check borrow limit again? (yes/no): ");
+            String choice = sc.nextLine().trim();
+            if (!choice.equalsIgnoreCase("yes")) break;
         }
-
-        if (currentUser == null) {
-            System.out.println("User not found!");
-            return;
-        }
-
-        int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
-        int borrowedCount = Integer.parseInt(currentUser[5]);
-        int remaining = borrowLimit - borrowedCount;
-
-        System.out.println("Your borrow limit: " + borrowLimit + " books.");
-        System.out.println("Books already borrowed: " + borrowedCount);
-        System.out.println("You can still borrow: " + remaining + " books.");
-
-        try (BufferedWriter log = new BufferedWriter(new FileWriter("book_log.txt", true))) {
-            log.write(java.time.LocalDateTime.now() + " - Borrow limit checked by: " + currentUserName);
-            log.newLine();
-        } catch (IOException e) {
-            System.out.println("Could not write to log: " + e.getMessage());
-        }
-
-        System.out.print("Do you want to check borrow limit again? (yes/no): ");
-        String choice = sc.nextLine().trim();
-        if (!choice.equalsIgnoreCase("yes")) break;
     }
-}
-
 
     // Display All Books
     public static void displayBooks() {
