@@ -5,3 +5,4 @@
 105,Fatima,fatima@email.com,xyz123,Student,0
 2378,AFAF,afaf@gmail.com,vv67,student,0
 3456,rohan,rohan@email.com,6789,staff,0
+2345,Javeria Waqar,javeria@gmail.com,56tyu,Student,0

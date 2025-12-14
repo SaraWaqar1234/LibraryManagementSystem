@@ -140,7 +140,8 @@ public class LibraryManagementSystem {
             System.out.println("4. Return Books");
             System.out.println("5. Check Book Availability");
             System.out.println("6. Display Borrow Limit");
-            System.out.println("7. Exit");
+            System.out.println("7. Display Records");
+            System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
 
             int choice = -1;
@@ -158,7 +159,8 @@ public class LibraryManagementSystem {
                 case 4: returnBook(); break;
                 case 5: checkBookAvailability(); break;
                 case 6: displayBorrowLimit(); break;
-                case 7: exit(); break;
+                case 7: displayRecords(); break;
+                case 8: exit(); break;
                 default: System.out.println("Enter correct option!");
             }
         }
@@ -181,69 +183,7 @@ public class LibraryManagementSystem {
     }
 
     public static void issueBook() {
-        while (true) {
-            try {
-                String[] currentUser = null;
-                for (String[] u : users) {
-                    if (u[0].equals(currentUserID)) {
-                        currentUser = u;
-                        break;
-                    }
-                }
-                if (currentUser == null) {
-                    System.out.println("User not found!");
-                    return;
-                }
-
-                int borrowLimit = currentUser[4].equalsIgnoreCase("Student") ? 3 : 5;
-                int borrowedCount = Integer.parseInt(currentUser[5]);
-                if (borrowedCount >= borrowLimit) {
-                    System.out.println("You have reached your borrow limit.");
-                    return;
-                }
-
-                System.out.print("Enter Book ID or Name to issue: ");
-                String input = sc.nextLine().trim();
-                String[] foundBook = null;
-
-                for (String[] b : books) {
-                    if (b.length >= 5 && (b[0].equalsIgnoreCase(input) || b[1].equalsIgnoreCase(input))) {
-                        int copies = Integer.parseInt(b[4]);
-                        if (copies > 0) {
-                            foundBook = b;
-                            break;
-                        }
-                    }
-                }
-
-                if (foundBook == null) {
-                    System.out.println("Book not found or no copies available!");
-                } else {
-                    int availableCopies = Integer.parseInt(foundBook[4]);
-                    foundBook[4] = String.valueOf(availableCopies - 1);
-
-                    // Track who borrowed the book
-                    if (foundBook.length < 6) {
-                        // add borrowedBy field if not exists
-                        foundBook = Arrays.copyOf(foundBook, 6);
-                    }
-                    foundBook[5] = currentUserID;
-
-                    currentUser[5] = String.valueOf(borrowedCount + 1);
-
-                    saveBooks();
-                    saveUsers();
-                    System.out.println("Book issued successfully!");
-                }
-
-                System.out.print("Do you want to issue another book? (yes/no): ");
-                String choice = sc.nextLine().trim();
-                if (!choice.equalsIgnoreCase("yes")) break;
-
-            } catch (Exception e) {
-                System.out.println("An error occurred while issuing the book. Please try again.");
-            }
-        }
+        System.out.println("Issue Book feature under process.");
     }
 
     public static void returnBook() {
@@ -369,6 +309,27 @@ public class LibraryManagementSystem {
             System.out.print("Do you want to check borrow limit again? (yes/no): ");
             String choice = sc.nextLine().trim();
             if (!choice.equalsIgnoreCase("yes")) break;
+        }
+    }
+
+    public static void displayRecords() {
+        if (!isStaff()) {
+            System.out.println("Access denied! Only Staff can view records.");
+            return;
+        }
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("record.txt"));
+            String line;
+            boolean found = false;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                found = true;
+            }
+            br.close();
+            if (!found) System.out.println("No records found.");
+        } catch (Exception e) {
+            System.out.println("No record file found.");
         }
     }
 
