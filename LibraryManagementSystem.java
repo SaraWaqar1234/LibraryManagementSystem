@@ -343,6 +343,7 @@ saveBooks();
         } catch (IOException e) {
             System.out.println("Could not write to log: " + e.getMessage());
         }
+    }
        
  
    public static void issueBook() {
@@ -652,7 +653,7 @@ saveBooks();
             System.out.println("Error saving books: " + e.getMessage());
         }
     }
-}
+
  public static void createLogFile() {
     try {
         File logFile = new File("book_log.txt");
