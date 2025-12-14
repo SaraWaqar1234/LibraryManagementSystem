@@ -1,7 +1,7 @@
 101,Ali,ali@email.com,1234,Student,1
 102,Sara,sara@email.com,abcd,Staff,0
-103,Ahmed,ahmed@email.com,pass123,Student,1
-104,Mr.Khan,khan@email.com,qwerty,Staff,2
+103,Ahmed,ahmed@email.com,pass123,Student,0
+104,Mr.Khan,khan@email.com,qwerty,Staff,0
 105,Fatima,fatima@email.com,xyz123,Student,0
 2378,AFAF,afaf@gmail.com,vv67,student,0
 3456,rohan,rohan@email.com,6789,staff,0

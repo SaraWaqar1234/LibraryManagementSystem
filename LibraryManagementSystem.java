@@ -15,23 +15,29 @@ public class LibraryManagementSystem {
 
         System.out.println("Welcome to the Library Management System!");
 
-        while (!loggedIn) {
-            System.out.print("Do you want to log in? (yes/no): ");
-            String choice = sc.nextLine().trim();
+       while (!loggedIn) {
+    System.out.print("Do you want to log in? (yes/no): ");
+    String choice = sc.nextLine().trim();
 
-            if (choice.equalsIgnoreCase("yes")) {
-                loggedIn = login();
-            } else if (choice.equalsIgnoreCase("no")) {
-                System.out.print("Do you want to exit? (yes/no): ");
-                String exitChoice = sc.nextLine().trim();
-                if (exitChoice.equalsIgnoreCase("yes")) {
-                    System.out.println("Exiting the system. Goodbye!");
-                    return;
-                }
+    if (choice.equalsIgnoreCase("yes")) {
+        loggedIn = login();
+    } else if (choice.equalsIgnoreCase("no")) {
+        while (true) {
+            System.out.print("Do you want to exit? (yes/no): ");
+            String exitChoice = sc.nextLine().trim();
+            if (exitChoice.equalsIgnoreCase("yes")) {
+                System.out.println("Exiting the system. Goodbye!");
+                return;
+            } else if (exitChoice.equalsIgnoreCase("no")) {
+                break; // go back to login prompt
             } else {
-                System.out.println("Invalid choice. Enter again.");
+                System.out.println("Invalid choice. Enter 'yes' or 'no'.");
             }
         }
+    } else {
+        System.out.println("Invalid choice. Enter 'yes' or 'no'.");
+    }
+}
 
         mainMenu();
     }
@@ -333,14 +339,23 @@ public class LibraryManagementSystem {
         }
     }
 
-    public static void exit() {
+   public static void exit() {
+    while (true) {
         System.out.print("Do you really want to exit? (yes/no): ");
         String confirm = sc.nextLine().trim();
+
         if (confirm.equalsIgnoreCase("yes")) {
             System.out.println("Exiting... Goodbye!");
             System.exit(0);
+        } else if (confirm.equalsIgnoreCase("no")) {
+            System.out.println("Returning to main menu.");
+            return; 
+        } else {
+            System.out.println("Invalid choice. Please enter 'yes' or 'no'.");
         }
     }
+}
+
 
     public static void loadUsers() {
         try {
